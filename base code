@@ -1,0 +1,115 @@
+import pygame
+
+pygame.init()
+
+screen = pygame.display.set_mode((800,800))
+pygame.display.set_caption('Zelda!')
+image = pygame.image.load('linksprites.jpg')
+clock = pygame.time.Clock()
+
+#player's starting position
+xpos = 400
+ypos = 100
+counter=0
+ticker = 0
+direction = 0 #0 is left, 1 is right, 2 is down, 3 is up
+
+controller = pygame.joystick.Joystick(0) #grab a controller from the operating system, hold in this variable
+controller.init() #sets up controller
+keys = [False, False, False, False] #python array to hold key values (they all start not pressed)
+
+
+while True: #GAME LOOP
+    clock.tick(60)
+#input/output section
+    for event in pygame.event.get() :
+        if event.type == pygame.QUIT :
+            pygame.quit()
+            quit()
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        direction = 0
+        xpos-=2
+        ticker+=1
+        if ticker > 9:
+          ticker = 0
+          counter+=1
+          if counter>7: #i have 8 images in my row (first is 0)
+            counter = 0
+    elif keys[pygame.K_RIGHT]:
+        xpos+=2
+        ticker+=1
+        if ticker > 9:
+          ticker = 0
+          counter+=1
+          if counter>7: #i have 8 images in my row (first is 0)
+            counter = 0  
+    elif keys[pygame.K_UP]:
+        ypos-=2
+        #basically just copy  lines 26-33
+    elif keys[pygame.K_DOWN]:
+        ypos+=2
+        #Just copy lines 35-41
+    else:
+      counter = 0
+
+#controller-----------------------------------------------------------------
+
+        
+    if event.type == pygame.JOYHATMOTION: #check for controller input
+            hat = controller.get_hat(0) #the hat is the flat cross-shaped button (as opposed to stick or button)
+            
+            #LEFT
+            if hat[0] < 0:
+                keys[0]=True
+            else:
+                keys[0] = False
+           
+            #UP
+            if hat[1] < 0:
+                keys[1] = True
+            else:
+                keys[1] = False
+                
+            #RIGHT
+            if hat[0] > 0:
+                keys[2] = True
+            else:
+                keys[2] = False
+                
+                
+            #DOWN
+            if hat[1] > 0:
+                keys[3] = True
+            else:
+                keys[3] = False
+                     
+     #physics section
+    if keys[0]:
+        xpos-=5
+
+    if keys [1]:
+        ypos+=5
+        
+    if keys [2]:
+        xpos+=5
+        
+    if keys [3]:
+        ypos-=5
+    
+    
+   
+#render section
+    screen.fill((255, 255, 255))
+    if keys[pygame.K_RIGHT]:
+      screen.blit(image, (xpos,ypos), (0+counter*32,48,32,48)) #each of my images are 32 wide, 48 tall
+    elif keys[pygame.K_LEFT]:
+      screen.blit(image, (xpos,ypos), (0+counter*32,0,32,48))
+    elif keys[pygame.K_UP]:
+      screen.blit(image, (xpos,ypos), (0+counter*32,96,32,48))
+    elif keys[pygame.K_DOWN]:
+      screen.blit(image, (xpos,ypos), (0+counter*32,144,32,48))
+    else:
+      screen.blit(image, (xpos,ypos), (0+counter*32,144,32,48))
+
+    pygame.display.flip() 
